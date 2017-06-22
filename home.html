@@ -1,10 +1,65 @@
-<html>
+<html ng-app="listadefilmes">
 <head>
-    <title>hello World</title>
+    <title>Lista de filmes</title>
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.css">
+
+    <style>
+        .jumbotron {
+            width: 400px;
+            text-align: center;
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .table {
+            margin-top: 20px;
+        }
+        .form-control {
+            margin-bottom: 5px;
+        }
+    </style>
+
+    <script src="lib/angular/angular.js" ></script>
+    <script>
+        angular.module("listadefilmes", []);
+        angular.module("listadefilmes").controller("listadefilmesCtrl", function ($scope) {
+            $scope.app = "procurando filmes";
+            $scope.filmes = [
+                {nome: "X-man", data: "02/12/2018"},
+                {nome: "Quarteto Fantastico", data: "08/04/2020"},
+                {nome: "Dr Strange", data: "20/01/2022"},
+            ];
+            $scope.adicionarFilme = function (filme) {
+                $scope.filmes.push(angular.copy(filme));
+                delete $scope.filme;
+            };
+
+        });
+    </script>
+
 
 </head>
 
-<body>
+<body ng-controller="listadefilmesCtrl">
+    <div  class="jumbotron">
+        <h3>{{app}}</h3>
+        <table class="table table-striped">
+            <tr>
+                <th>Nome</th>
+                <th>Data</th>
+            </tr>
+            <tr ng-repeat="filme in filmes">
+                <td>{{filme.nome}}</td>
+                <td>{{filme.data}}</td>
+            </tr>
+
+        </table>
+        <hr/>
+        <input class="form-control" type="text" ng-model="filme.nome" placeholder="Nome"/>
+        <input class="form-control" type="text" ng-model="filme.data" placeholder="Data"/>
+        <button class="btn btn-primary btn-block" ng-click="adicionarFilme(filme)">Adicionar Filme</button>
+        
+    </div>
 
 </body>
 </html>
