@@ -17,6 +17,12 @@
         .form-control {
             margin-bottom: 5px;
         }
+        .selecionado {
+            background-color: yellow;
+        }
+        .negrito {
+            font-weight: bold;
+        }
     </style>
 
     <script src="lib/angular/angular.js" ></script>
@@ -33,6 +39,16 @@
                 $scope.filmes.push(angular.copy(filme));
                 delete $scope.filme;
             };
+             $scope.apagarFilme = function (filmes) {
+                $scope.filmes = filmes.filter(function (filme) {
+                     if (!filme.selecionado) return filme;
+                });
+             };
+            $scope.isFilmeSelecionado = function (filmes) {
+              return filmes.some(function (filme) {
+                 return filme.selecionado;
+                 });
+             };
 
         });
     </script>
@@ -43,12 +59,13 @@
 <body ng-controller="listadefilmesCtrl">
     <div  class="jumbotron">
         <h3>{{app}}</h3>
-        <table class="table table-striped">
+        <table ng-show="filmes.length > 0" class="table">
             <tr>
                 <th>Nome</th>
                 <th>Data</th>
             </tr>
-            <tr ng-repeat="filme in filmes">
+            <tr ng-class="{'selecionado negrito': filme.selecionado}" ng-repeat="filme in filmes">
+                <td><input type="checkbox" ng-model="filme.selecionado"/></td>
                 <td>{{filme.nome}}</td>
                 <td>{{filme.data}}</td>
             </tr>
@@ -57,9 +74,13 @@
         <hr/>
         <input class="form-control" type="text" ng-model="filme.nome" placeholder="Nome"/>
         <input class="form-control" type="text" ng-model="filme.data" placeholder="Data"/>
-        <button class="btn btn-primary btn-block" ng-click="adicionarFilme(filme)">Adicionar Filme</button>
-        
-    </div>
 
+
+        <button class="btn btn-primary btn-block" ng-click="adicionarFilme(filme)" ng-disabled="!filme.nome">Adicionar Filme</button>
+        <button class="btn btn-danger btn-block" ng-click="apagarFilme(filmes)" ng-if="isFilmeSelecionado(filmes)">Apagar Contatos</button>
+
+
+    </div>
+    <div ng-include="'footer.html'"></div>
 </body>
 </html>
