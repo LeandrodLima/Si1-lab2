@@ -1,0 +1,111 @@
+<html ng-app="listadeSeries">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Series</title>
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.css">
+
+    <style>
+
+        .jumbotron {
+            width: 400px;
+            text-align: center;
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .table {
+            margin-top: 20px;
+        }
+        .form-control {
+            margin-bottom: 5px;
+        }
+        .selecionada {
+            background-color: yellow;
+        }
+        .negrito {
+            font-weight: bold;
+        }
+    </style>
+
+    <script src="lib/angular/angular.js" ></script>
+    <script>
+        angular.module("listadeSeries", []);
+        angular.module("listadeSeries").controller("listadeSeriesCtrl", function ($scope) {
+
+            $scope.app = "procurando Serie";
+            $scope.series = [
+                {nome: "X-man", data: "02/12/2018"},
+                {nome: "Quarteto Fantastico", data: "08/04/2020"},
+                {nome: "Dr Strange", data: "20/01/2022"},
+            ];
+            $scope.adicionarSerie = function (serie) {
+                $scope.series.push(angular.copy(serie));
+                delete $scope.serie;
+            };
+             $scope.apagarSerie = function (serie) {
+                $scope.series = serie.filter(function (serie) {
+                     if (!serie.selecionada) return serie;
+                });
+             };
+            $scope.isSerieSelecionada = function (series) {
+              return series.some(function (serie) {
+                 return serie.selecionada;
+                 return serie.selecionada;
+                 });
+             };
+            $scope.status = false;
+            $scope.logar  = function (statusl) {
+               $scope.status= angular.equals(statusl, "eu");
+            }
+
+
+            $scope.ordenarPor = function (campo) {
+                $scope.criterioDeOrdenacao = campo;
+                $scope.direcaoDaOrdenacao = !$scope.direcaoDaOrdenacao;
+            };
+
+
+        });
+    </script>
+
+
+</head>
+
+<body ng-controller="listadeSeriesCtrl">
+    <div  class="jumbotron">
+        <h3>{{app}}</h3>
+        {{status}}
+        <table ng-show="series.length > 0" class="table">
+            <tr>
+                <th></th>
+                <th><a href="" ng-click="ordenarPor('nome')">Nome</a></th>
+                <th><a href="" ng-click="ordenarPor('data')">Data</a></th>
+            </tr>
+            <tr ng-class="{'selecionada negrito': serie.selecionado}" ng-repeat="serie in series | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao">
+                <td><input type="checkbox" ng-model="serie.selecionada"/></td>
+                <td>{{serie.nome}}</td>
+                <td>{{serie.data}}</td>
+            </tr>
+
+        </table>
+        <hr/>
+        <input class="form-control" type="text" ng-model="statusl" placeholder="Login" />
+        <button class="btn btn-primary btn-block" ng-click="logar(statusl)" >Logar</button>
+
+
+        <form name="serieForm">
+            <input class="form-control" type="text" ng-model="serie.nome" placeholder="Nome" ng-required="true"/>
+            <input class="form-control" type="text" ng-model="serie.data" placeholder="Data" ng-required="true"/>
+        </form>
+
+
+        <button class="btn btn-primary btn-block" ng-click="adicionarSerie(serie)" ng-disabled="serieForm.$invalid || !status">Adicionar Serie</button>
+        <button class="btn btn-danger btn-block" ng-click="apagarSerie(series)" ng-if="isSerieSelecionada(series) && status">Apagar Serie</button>
+
+
+
+    </div>
+
+    <div ng-include="'footer.html'"></div>
+</body>
+</html>

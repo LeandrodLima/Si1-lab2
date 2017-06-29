@@ -1,9 +1,11 @@
-<html ng-app="listadefilmes">
+<html ng-app="listadeSeries">
 <head>
-    <title>Lista de filmes</title>
+    <meta charset="UTF-8">
+    <title>Lista de Series</title>
     <link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.css">
 
     <style>
+
         .jumbotron {
             width: 400px;
             text-align: center;
@@ -17,7 +19,7 @@
         .form-control {
             margin-bottom: 5px;
         }
-        .selecionado {
+        .selecionada {
             background-color: yellow;
         }
         .negrito {
@@ -27,28 +29,52 @@
 
     <script src="lib/angular/angular.js" ></script>
     <script>
-        angular.module("listadefilmes", []);
-        angular.module("listadefilmes").controller("listadefilmesCtrl", function ($scope) {
-            $scope.app = "procurando filmes";
-            $scope.filmes = [
+        angular.module("listadeSeries", []);
+        angular.module("listadeSeries").controller("listadeSeriesCtrl", function ($scope) {
+
+            $scope.app = "procurando Serie";
+            $scope.favoritos = "Favoritos"
+            $scope.nick ="null"
+            $scope.series = [
                 {nome: "X-man", data: "02/12/2018"},
                 {nome: "Quarteto Fantastico", data: "08/04/2020"},
                 {nome: "Dr Strange", data: "20/01/2022"},
             ];
-            $scope.adicionarFilme = function (filme) {
-                $scope.filmes.push(angular.copy(filme));
-                delete $scope.filme;
+
+            $scope.listaSeries = [
+                {nome: "Game of Thrones", data: "02/07/2017"},
+                {nome: "Breaking Bad", data: "12/04/2019"},
+                {nome: "Supernatural", data: "04/11/2022"},
+            ];
+            $scope.adicionarSerie = function (serie) {
+               var newseries = serie.filter(function (serie) {
+                    if (!serie.selecionada) return serie;
+                });
+                $scope.series.push(angular.copy(serie in newseries));
             };
-             $scope.apagarFilme = function (filmes) {
-                $scope.filmes = filmes.filter(function (filme) {
-                     if (!filme.selecionado) return filme;
+
+             $scope.apagarSerie = function (serie) {
+                $scope.series = serie.filter(function (serie) {
+                     if (!serie.selecionada) return serie;
                 });
              };
-            $scope.isFilmeSelecionado = function (filmes) {
-              return filmes.some(function (filme) {
-                 return filme.selecionado;
+            $scope.isSerieSelecionada = function (series) {
+              return series.some(function (serie) {
+                 return serie.selecionada;
+                 return serie.selecionada;
                  });
              };
+            $scope.status = false;
+            $scope.logar  = function (statusl) {
+               $scope.status= angular.equals(statusl, "eu");
+            }
+
+
+            $scope.ordenarPor = function (campo) {
+                $scope.criterioDeOrdenacao = campo;
+                $scope.direcaoDaOrdenacao = !$scope.direcaoDaOrdenacao;
+            };
+
 
         });
     </script>
@@ -56,31 +82,90 @@
 
 </head>
 
-<body ng-controller="listadefilmesCtrl">
-    <div  class="jumbotron">
+<body ng-controller="listadeSeriesCtrl">
+    <div  class="jumbotron" >
         <h3>{{app}}</h3>
-        <table ng-show="filmes.length > 0" class="table">
+        {{status}}
+        <tr>
+            <h4 ng-show="status">{{nick}} </h4>
+             <tr>
+                <input  class="form-control" type="text"  ng-show="!status" ng-model="statusl"  placeholder="Login"/>
+            </tr>
+            <button class="btn btn-primary btn-block" ng-click="logar(statusl)" ng-if="!status" >Logar</button>
+            <button class="btn btn-danger btn-block" ng-click="logar(!statusl)" ng-if="status" >Sair</button>
+        </tr>
+
+     <div ng-show="status" >
+
+         <table ng-show="listaSeries.length > 0" class="table">
+
+             <h2>{{favoritos}}</h2>
+             <tr>
+                 <th></th>
+                 <th><a href="" ng-click="ordenarPor('nome')">Nome</a></th>
+                 <th><a href="" ng-click="ordenarPor('data')">Data</a></th>
+             </tr>
+             <tr ng-class="{'selecionada negrito': serie.selecionado}" ng-repeat="serie in series | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao">
+                 <td><input type="checkbox" ng-model="serie.selecionada"/></td>
+                 <td>{{serie.nome}}</td>
+                 <td>{{serie.data}}</td>
+             </tr>
+
+         </table>
+
+         <button class="btn btn-danger btn-block" ng-click="apagarSerie(series)" ng-if="isSerieSelecionada(series) && status">Apagar Serie</button>
+
+         <form name="buscaLogadoForm">
+             <input class="form-control" type="text" ng-model="criterioDeBuscaLogado" placeholder="O que você está buscando?" ng-required="true"/>
+         </form>
+
+         <table ng-show="series.length > 0 && buscaLogadoForm.$valid" class="table">
+             <tr>
+                 <th></th>
+                 <th><a href="" ng-click="ordenarPor('nome')">Nome</a></th>
+                 <th><a href="" ng-click="ordenarPor('data')">Data</a></th>
+             </tr>
+             <tr ng-class="{'selecionada negrito': serieLista.selecionado}" ng-repeat="serieLista in listaSeries | filter:criterioDeBuscaLogado | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao">
+                 <td><input type="checkbox" ng-model="serieLista.selecionada"/></td>
+                 <td>{{serieLista.nome}}</td>
+                 <td>{{serieLista.data}}</td>
+
+             </tr>
+                <button class="btn btn-primary btn-block" ng-click="adicionarSerie(listaSeries )" >Adicionar Serie</button>
+
+
+         </table>
+
+             </div>
+
+    <div ng-show="!status">
+        {{buscaForm.$valid}}
+        <form name="buscaForm">
+            <input class="form-control" type="text" ng-model="criterioDeBusca" nome="busca"placeholder="O que você está buscando?" ng-required="true"/>
+        </form>
+
+        <table ng-show="listaSeries.length > 0 && buscaForm.$valid" class="table">
             <tr>
-                <th>Nome</th>
-                <th>Data</th>
+                <th></th>
+                <th><a href="" ng-click="ordenarPor('nome')">Nome</a></th>
+                <th><a href="" ng-click="ordenarPor('data')">Data</a></th>
             </tr>
-            <tr ng-class="{'selecionado negrito': filme.selecionado}" ng-repeat="filme in filmes">
-                <td><input type="checkbox" ng-model="filme.selecionado"/></td>
-                <td>{{filme.nome}}</td>
-                <td>{{filme.data}}</td>
+            <tr ng-class="{'selecionada negrito': serie.selecionado}" ng-repeat="serie in listaSeries | filter:criterioDeBusca | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao">
+                <td></td>
+                <td>{{serie.nome}}</td>
+                <td>{{serie.data}}</td>
             </tr>
+
 
         </table>
         <hr/>
-        <input class="form-control" type="text" ng-model="filme.nome" placeholder="Nome"/>
-        <input class="form-control" type="text" ng-model="filme.data" placeholder="Data"/>
-
-
-        <button class="btn btn-primary btn-block" ng-click="adicionarFilme(filme)" ng-disabled="!filme.nome">Adicionar Filme</button>
-        <button class="btn btn-danger btn-block" ng-click="apagarFilme(filmes)" ng-if="isFilmeSelecionado(filmes)">Apagar Contatos</button>
 
 
     </div>
+
+
+    </div>
+
     <div ng-include="'footer.html'"></div>
 </body>
 </html>
